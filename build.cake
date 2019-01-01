@@ -7,20 +7,20 @@ var source = Argument<string>("source", null);
 var apiKey = Argument<string>("apikey", null);
 
 var version = target.ToLower() == "default"
-    ? "2.0.0-Pre" + (EnvironmentVariable("APPVEYOR_BUILD_NUMBER") ?? "0")
+    ? "2.0.0-pre" + (EnvironmentVariable("APPVEYOR_BUILD_NUMBER") ?? "0")
     : GetNancyVersion(new FilePath("dependencies/Nancy/src/Directory.Build.props"));
 
 // Variables
 var projectName = "Nancy.Serialization.JsonNet";
 var configuration = "Release";
-var fullFrameworkTarget = "net452";
-var netStandardTarget = "netstandard1.6";
-var netCoreTarget = "netcoreapp1.1";
+// var fullFrameworkTarget = "net452";
+var netStandardTarget = "netstandard2.0";
+var netCoreTarget = "netcoreapp2.2";
 
 // Directories
 var output = Directory("build");
 var outputBinaries = output + Directory("binaries");
-var outputBinariesNet452 = outputBinaries + Directory(fullFrameworkTarget);
+// var outputBinariesNet452 = outputBinaries + Directory(fullFrameworkTarget);
 var outputBinariesNetstandard = outputBinaries + Directory(netStandardTarget);
 var outputPackages = output + Directory("packages");
 var outputNuGet = output + Directory("nuget");
@@ -42,7 +42,7 @@ Task("Clean")
             outputBinaries,
             outputPackages,
             outputNuGet,
-            outputBinariesNet452,
+            // outputBinariesNet452,
             outputBinariesNetstandard
         });
 
@@ -73,11 +73,11 @@ Task("Compile")
             var content =
                 System.IO.File.ReadAllText(project.FullPath, Encoding.UTF8);
 
-            if (IsRunningOnUnix() && content.Contains(">" + fullFrameworkTarget + "<"))
-            {
-                Information(project.GetFilename() + " only supports " +fullFrameworkTarget + " and cannot be built on *nix. Skipping.");
-                continue;
-            }
+            // if (IsRunningOnUnix() && content.Contains(">" + fullFrameworkTarget + "<"))
+            // {
+            //     Information(project.GetFilename() + " only supports " +fullFrameworkTarget + " and cannot be built on *nix. Skipping.");
+            //     continue;
+            // }
 
             DotNetCoreBuild(project.GetDirectory().FullPath, new DotNetCoreBuildSettings {
                 ArgumentCustomization = args => {
@@ -126,10 +126,10 @@ Task("Publish")
     .Does(() =>
     {
         // Copy net452 binaries.
-        CopyFiles(GetFiles("./src/**/bin/" + configuration + "/" + fullFrameworkTarget + "/*.dll")
-            + GetFiles("./src/**/bin/" + configuration + "/" + fullFrameworkTarget + "/*.xml")
-            + GetFiles("./src/**/bin/" + configuration + "/" + fullFrameworkTarget + "/*.pdb")
-            + GetFiles("./src/**/*.ps1"), outputBinariesNet452);
+        // CopyFiles(GetFiles("./src/**/bin/" + configuration + "/" + fullFrameworkTarget + "/*.dll")
+        //     + GetFiles("./src/**/bin/" + configuration + "/" + fullFrameworkTarget + "/*.xml")
+        //     + GetFiles("./src/**/bin/" + configuration + "/" + fullFrameworkTarget + "/*.pdb")
+        //     + GetFiles("./src/**/*.ps1"), outputBinariesNet452);
 
         // Copy netstandard binaries.
         CopyFiles(GetFiles("./src/**/bin/" + configuration + "/" + netStandardTarget + "/*.dll")
@@ -177,41 +177,13 @@ Task("Test")
     .IsDependentOn("Compile")
     .Does(() =>
     {
-        var projects =
-            GetFiles("./test/**/*.csproj");
+        var settings = new ProcessSettings {
+            Arguments = string.Concat("test --configuration ", configuration)
+        };
 
-        if (projects.Count == 0)
+        if (StartProcess("dotnet", settings) != 0)
         {
-            throw new CakeException("Unable to find any projects to test.");
-        }
-
-        foreach(var project in projects)
-        {
-            var content =
-                System.IO.File.ReadAllText(project.FullPath, Encoding.UTF8);
-
-            if (IsRunningOnUnix() && content.Contains(">" + fullFrameworkTarget + "<"))
-            {
-                Information(project.GetFilename() + " only supports " +fullFrameworkTarget + " and tests cannot be executed on *nix. Skipping.");
-                continue;
-            }
-
-            var settings = new ProcessSettings {
-                Arguments = string.Concat("xunit -configuration ", configuration, " -nobuild"),
-                WorkingDirectory = project.GetDirectory()
-            };
-
-            if (IsRunningOnUnix())
-            {
-                settings.Arguments.Append(string.Concat("-framework ", netCoreTarget));
-            }
-
-            Information("Executing tests for " + project.GetFilename() + " with arguments: " + settings.Arguments.Render());
-
-            if (StartProcess("dotnet", settings) != 0)
-            {
-                throw new CakeException("One or more tests failed during execution of: " + project.GetFilename());
-            }
+            throw new CakeException("One or more tests failed during test execution");
         }
     });
 

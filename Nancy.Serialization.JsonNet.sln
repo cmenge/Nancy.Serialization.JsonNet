@@ -15,11 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nancy.Serialization.JsonNet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nancy.Serialization.JsonNet.Tests", "test\Nancy.Serialization.JsonNet.Tests\Nancy.Serialization.JsonNet.Tests.csproj", "{9EC1FBB1-F518-4949-96F0-2BC755F641B7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nancy", "dependencies\Nancy\src\Nancy\Nancy.csproj", "{E5720540-A51A-4C78-8D82-E97636C77AA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nancy", "..\Nancy\src\Nancy\Nancy.csproj", "{E5720540-A51A-4C78-8D82-E97636C77AA1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nancy.Testing", "dependencies\Nancy\src\Nancy.Testing\Nancy.Testing.csproj", "{50719CEF-2E58-46FA-9718-48560225166D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nancy.Testing", "..\Nancy\src\Nancy.Testing\Nancy.Testing.csproj", "{50719CEF-2E58-46FA-9718-48560225166D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nancy.Authentication.Forms", "dependencies\Nancy\src\Nancy.Authentication.Forms\Nancy.Authentication.Forms.csproj", "{9C22A464-DB8C-4BFB-9487-9880555C28C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nancy.Authentication.Forms", "..\Nancy\src\Nancy.Authentication.Forms\Nancy.Authentication.Forms.csproj", "{9C22A464-DB8C-4BFB-9487-9880555C28C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

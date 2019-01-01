@@ -13,14 +13,12 @@ var version = target.ToLower() == "default"
 // Variables
 var projectName = "Nancy.Serialization.JsonNet";
 var configuration = "Release";
-// var fullFrameworkTarget = "net452";
 var netStandardTarget = "netstandard2.0";
 var netCoreTarget = "netcoreapp2.2";
 
 // Directories
 var output = Directory("build");
 var outputBinaries = output + Directory("binaries");
-// var outputBinariesNet452 = outputBinaries + Directory(fullFrameworkTarget);
 var outputBinariesNetstandard = outputBinaries + Directory(netStandardTarget);
 var outputPackages = output + Directory("packages");
 var outputNuGet = output + Directory("nuget");
@@ -42,7 +40,6 @@ Task("Clean")
             outputBinaries,
             outputPackages,
             outputNuGet,
-            // outputBinariesNet452,
             outputBinariesNetstandard
         });
 
@@ -72,12 +69,6 @@ Task("Compile")
         {
             var content =
                 System.IO.File.ReadAllText(project.FullPath, Encoding.UTF8);
-
-            // if (IsRunningOnUnix() && content.Contains(">" + fullFrameworkTarget + "<"))
-            // {
-            //     Information(project.GetFilename() + " only supports " +fullFrameworkTarget + " and cannot be built on *nix. Skipping.");
-            //     continue;
-            // }
 
             DotNetCoreBuild(project.GetDirectory().FullPath, new DotNetCoreBuildSettings {
                 ArgumentCustomization = args => {
@@ -125,12 +116,6 @@ Task("Publish")
     .IsDependentOn("Compile")
     .Does(() =>
     {
-        // Copy net452 binaries.
-        // CopyFiles(GetFiles("./src/**/bin/" + configuration + "/" + fullFrameworkTarget + "/*.dll")
-        //     + GetFiles("./src/**/bin/" + configuration + "/" + fullFrameworkTarget + "/*.xml")
-        //     + GetFiles("./src/**/bin/" + configuration + "/" + fullFrameworkTarget + "/*.pdb")
-        //     + GetFiles("./src/**/*.ps1"), outputBinariesNet452);
-
         // Copy netstandard binaries.
         CopyFiles(GetFiles("./src/**/bin/" + configuration + "/" + netStandardTarget + "/*.dll")
             + GetFiles("./src/**/bin/" + configuration + "/" + netStandardTarget + "/*.xml")
